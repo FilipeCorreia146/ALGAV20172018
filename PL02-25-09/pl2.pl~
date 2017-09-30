@@ -16,6 +16,19 @@ media(L,M):-
     somar(L,S),
     M is S/C.
 
+%b)
+
+menor([X | R], M):-
+    menor(R, X, M).
+
+menor([], X, X).
+
+menor([Y | R], X, M):-
+    X<Y, !,
+    menor(R, X, M).
+
+menor([Y | R], _, M):-
+    menor(R, Y, M).
 
 
 %c)
@@ -40,38 +53,78 @@ contarImpares([H|T],C):-
 contarImpares([_|T],C):-
     contarImpares(T,C).
 
+%d)
+
+membro(X, [X | _]).
+
+membro(X, [_ | T]):-
+    membro(X, T).
+
+nao_tem_repetidos([]).
+
+nao_tem_repetidos([H | T]):-
+    not(membro(H, T)),
+    nao_tem_repetidos(T).
+
+tem_repetidos([H | T]):-
+    not(nao_tem_repetidos([H | T])).
 
 %e)
-
-menor([X | R], M):-
-    menor(R, X, M).
-
-menor([], X, X).
-
-menor([Y | R], X, M):-
-    X<Y, !,
-    menor(R, X, M).
-
-menor([Y | R], _, M):-
-    menor(R, Y, M).
 
 novoMenor(L1,[M|L3]) :-
     menor(L1, M),
     delete(M,L1,L3).
 
+%f)
+
+concatena([], L, L).
+
+concatena([H | T], L, [H | LR]):-
+    concatena(T, L, LR).
+
 %g)
 
 flatten([],[]):-!.
 
+%h)
+
+deleteOne(_, [], []).
+
+deleteOne(X, [X | R], R):-
+    !.
+
+deleteOne(X, [Y | R], [Y | R1]):-
+    deleteOne(X, R, R1).
+
 %i)
 
-delete(_,[],[]).
-delete(X, [X|R], R1):-!,
-    delete(X,R,R1).
+deleteAll(_,[],[]).
 
-delete(X, [Y|R], [Y|R1]):-
-    delete(X, R, R1).
+deleteAll(X, [X|R], R1):-!,
+    deleteAll(X,R,R1).
 
+deleteAll(X, [Y|R], [Y|R1]):-
+    deleteAll(X, R, R1).
+
+%j)
+
+replace(_, _, [], []).
+
+replace(X, Y, [X | R], [Y | R1]):-
+    replace(X, Y, R, R1).
+
+replace(X, Y, [Z | R], [Z | R1]):-
+    replace(X, Y, R, R1).
+
+%l)
+
+inverte(L, LI):-
+    inverte2(L, [], LI).
+
+inverte2([], L, L).
+
+inverte2([H | T], LA, LR):-
+    inverte2(T, [H | LA], LR).
 
 
 

@@ -94,18 +94,48 @@ deleteOne(X, [X | R], R):-
     !.
 
 deleteOne(X, [Y | R], [Y | R1]):-
-    delete(X, R, R1).
+    deleteOne(X, R, R1).
 
 %i)
 
-delete(_,[],[]).
-delete(X, [X|R], R1):-!,
-    delete(X,R,R1).
+deleteAll(_,[],[]).
 
-delete(X, [Y|R], [Y|R1]):-
-    delete(X, R, R1).
+deleteAll(X, [X|R], R1):-!,
+    deleteAll(X,R,R1).
 
+deleteAll(X, [Y|R], [Y|R1]):-
+    deleteAll(X, R, R1).
 
+%j)
+
+replace(_, _, [], []).
+
+replace(X, Y, [X | R], [Y | R1]):-
+    replace(X, Y, R, R1).
+
+replace(X, Y, [Z | R], [Z | R1]):-
+    replace(X, Y, R, R1).
+
+%l)
+
+inverte(L, LI):-
+    inverte2(L, [], LI).
+
+inverte2([], L, L).
+
+inverte2([H | T], LA, LR):-
+    inverte2(T, [H | LA], LR).
+
+%n)
+
+intersecao([], _, []).
+
+intersecao([X | R1], R2, [X | R]):-
+    membro(X, R2), !,
+    intersecao(R1, R2, R).
+
+intersecao([_ | R1], R2, R):-
+    intersecao(R1, R2, R).
 
 
 
