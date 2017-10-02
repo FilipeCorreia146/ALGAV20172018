@@ -84,7 +84,13 @@ concatena([H | T], L, [H | LR]):-
 
 %g)
 
-flatten([],[]):-!.
+flatten2([],[]):- !.
+flatten2([H|T],FL):-
+    !,
+    flatten2(H,NL),
+    flatten2(T,NLs),
+    concatena(NL,NLs,FL).
+flatten2(L, [L]).
 
 %h)
 
@@ -126,6 +132,16 @@ inverte2([], L, L).
 inverte2([H | T], LA, LR):-
     inverte2(T, [H | LA], LR).
 
+%n)
+
+intersecao([], _, []).
+
+intersecao([X | R1], R2, [X | R]):-
+    membro(X, R2), !,
+    intersecao(R1, R2, R).
+
+intersecao([_ | R1], R2, R):-
+    intersecao(R1, R2, R).
 
 
 

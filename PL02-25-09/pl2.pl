@@ -84,7 +84,13 @@ concatena([H | T], L, [H | LR]):-
 
 %g)
 
-flatten([],[]):-!.
+flatten2([],[]):- !.
+flatten2([H|T],FL):-
+    !,
+    flatten2(H,NL),
+    flatten2(T,NLs),
+    concatena(NL,NLs,FL).
+flatten2(L,[L]).
 
 %h)
 
