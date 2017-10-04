@@ -243,3 +243,5 @@ vizinho(X,Y):-
     fronteira(X,Y);
     fronteira(Y,X).
 
+somaPopViz(P,L,S):-
+    findall((Y,X),(vizinho(P,X),pais(X,_,Y)),L).

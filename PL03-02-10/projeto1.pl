@@ -244,10 +244,11 @@ vizinho(X,Y):-
     fronteira(Y,X).
 
 somaPopViz(P,L,S):-
-    findall(X,vizinho(P,X),NL),
-    getPop(NL,NL1),
+    findall((Y,X),(vizinho(P,X),pais(X,_,Y)),L),
+    contaPop(L,S).
 
-
-getPop([],[]).
-
+contaPop([],0).
+contaPop([(H,_)|T], S):-
+    contaPop(T,S1),
+    S is S1 + H.
 
