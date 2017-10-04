@@ -122,6 +122,8 @@ replace(X, Y, [X | R], [Y | R1]):-
 replace(X, Y, [Z | R], [Z | R1]):-
     replace(X, Y, R, R1).
 
+%k)
+
 %l)
 
 inverte(L, LI):-

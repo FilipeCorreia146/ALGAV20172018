@@ -90,7 +90,7 @@ flatten2([H|T],FL):-
     flatten2(H,NL),
     flatten2(T,NLs),
     concatena(NL,NLs,FL).
-flatten2(L, [L]).
+flatten2(L,[L]).
 
 %h)
 
@@ -121,6 +121,18 @@ replace(X, Y, [X | R], [Y | R1]):-
 
 replace(X, Y, [Z | R], [Z | R1]):-
     replace(X, Y, R, R1).
+
+%k)
+
+insert2([],X,Y,1,[X]).
+insert2([],X,Y,Z,[]).
+insert2(L, X, Y, Y, [X|NL]):-
+    C = Y + 1,
+    insert2(L,X,Y,C,NL).
+insert2([H|T],X,Y,C,[H|NL]):-
+    C1 = C + 1,
+    insert2(T, X, Y, C1, NL).
+
 
 %l)
 
