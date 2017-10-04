@@ -217,6 +217,32 @@ fronteira(romenia, ucrania).
 fronteira(russia, ucrania).
 
 
+%2)
+
+vizinho(X,Y):-
+    fronteira(X,Y);
+    fronteira(Y,X).
+
+lista(C):-
+    write('Continente: '),
+    write(C), nl,
+    write('--------------------'), nl,
+    findall(X, pais(X, C, _), L),
+    paises(L).
+
+paises([H | T]):-
+    descricao_pais(H),
+    paises(T).
+
+descricao_pais(P):-
+    pais(P, _, X),
+    write(P),
+    write(', '),
+    write(X),
+    write(', '),
+    findall(Y, vizinho(P, Y), L),
+    write(L), nl.
+
 
 %3)
 
@@ -237,11 +263,13 @@ doisMaisPop(P1,P2):-
 getSecondElement([_,P|_], P).
 
 
-%5)
+%4)
 
-vizinho(X,Y):-
-    fronteira(X,Y);
-    fronteira(Y,X).
+paisesGrandes(C, N, L):-
+    setof(X-P, (pais(P, C, X), X>N), L).
+
+
+%5)
 
 somaPopViz(P,L,S):-
     findall((Y,X),(vizinho(P,X),pais(X,_,Y)),L),
