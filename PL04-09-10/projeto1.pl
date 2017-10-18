@@ -1,5 +1,6 @@
 :-include('paises.pl').
-:- dynamic cor/2.
+:-dynamic cor/2.
+:-dynamic interseta/3.
 
 cores(azul).
 cores(amarelo).
@@ -191,25 +192,22 @@ contaVizinhos(P,N):-
 
 %10)
 
-cor(amarelo, portugal).
-cor(amarelo, espanha).
-cor(azul, franca).
+%cor(azul, portugal).
+%cor(amarelo, espanha).
+%cor(azul, franca).
+%cor(vermelho, alemanha).
+%cor(amarelo, polonia).
+%cor(verde, italia).
 
 checkCores(R):-
-    findall(X, cor(_, X), P),
-    write(P),
-    listar(P, R),
-    write(R).
+    findall((C, X), cor(C, X), P),
+    listar(P, R).
 
-listar([], _).
+listar([], []).
 
-listar([H | T], R):-
-    findall(X, (vizinho(X, H), cor(_, X)), V),
-    interseta(V, [], R, T).
+listar([(C, P) | L], [(P, C, V) | R]):-
+    setof(C1, Y^P^ (vizinho(Y, P), cor(C1, Y)), V),
+    listar(L, R).
 
-interseta([], L, R, T):-
-    listar(T, [L | R]).
 
-interseta([H | T], L, R, T):-
-    cor(C1, H),
-    interseta(T, [(H, C1) | L], R, T).
+
