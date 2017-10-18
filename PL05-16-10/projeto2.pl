@@ -82,3 +82,27 @@ distance(Lat1, Lon1, Lat2, Lon2, Dis2):-
 % distance(50.8462807,4.3547273,50.0878114,14.4204598,D).
 % Online: http://www.movable-type.co.uk/scripts/latlong.html
 %
+
+
+tsp1(C,L):-
+    findall(X,(city(X,_,_), not(X==C)),LS),
+    findall([C|E],(permutation(LS,E)),NL),
+    custos(C,CustoMin, NL).
+
+custos(C, CustoMin,[H | T]):-
+    custos2(C, , M),
+    CustoMin > M,
+    CustoMin is M,
+    custos(C,T).
+
+custos2(_, [], _).
+
+custos2(C, NL, M):-
+
+
+
+
+
+
+
+
