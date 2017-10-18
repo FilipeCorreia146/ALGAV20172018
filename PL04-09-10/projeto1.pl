@@ -124,33 +124,28 @@ dfs2(Act,Dest,LA,F,Cam):-
 %chamada recursiva
     dfs2(X,Dest,[X|LA],F1,Cam).
 
-	%9)
-
-% Algoritmo Sequencial Aproximado (Welsh e Powell)
+%9)
 
 colorir_mapa(C):-
-    findall((N,P),(pais(P,C,_),contaVizinhos(P,N)),LP),
-    sort(LP,SLP),
-    inverte(SLP,ILP),
-    findall(CO,cores(CO),LC),
-    atribuir_cor(ILP,LC).
+    findall(P,pais(P,C,_),LP),
+    findall(C1,cores(C1),LC),
+    colorir(LP,LC).
 
+colorir( [], [] ).
+colorir( [Node | Nodes], [Coloring | Colorings] ) :-
+	colorir( Nodes, Colorings ),
+	Coloring = cores( Node, Color ),
+	cores( Color ),
+	naoHaconflito( Coloring, Colorings ),
+        assertz(cor(Color, Node)).
 
-atribuir_cor([(_,P1),(H1,P2)|T1],[C|T2]):-
-    %assertz(cor(C,P1)),
-    write('..'),
-    write(C),
-    write('..'),
-    write(P1),
-    vizinho(P1,P2),
-    atribuir_cor([(H1,P2)|T1],T2);
-    atribuir_cor([(H1,P2)|T1],[C|T2]).
+naoHaconflito( _, [] ).
+naoHaconflito( Coloring1, [Coloring2 | Colorings] ) :-
+	not( conflito( Coloring1, Coloring2 )),
+	naoHaconflito( Coloring1, Colorings ).
 
-
-contaVizinhos(P,N):-
-    findall((P,X),vizinho(P,X),L),
-    length(L,Y),
-    N is Y.
+conflito( cores( Node1, Color ), cores( Node2, Color )) :-
+	vizinho( Node1, Node2 ).
 
 
 %8)
@@ -188,3 +183,12 @@ caminho2(Act,Dest,LA,F,Cam, Cont):-
     \+ member(X,LA),
 %chamada recursiva
     caminho2(X,Dest,[X|LA],F1,Cam,Cont).
+
+
+%11)
+
+
+exportar():-
+    tell('BD.txt'),
+    listing,
+    told.
