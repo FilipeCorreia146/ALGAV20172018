@@ -1,4 +1,17 @@
 :-include('paises.pl').
+:- dynamic cor/2.
+
+cores(azul).
+cores(amarelo).
+cores(vermelho).
+cores(preto).
+cores(branco).
+cores(verde).
+cores(lilas).
+cores(ciano).
+cores(magenta).
+cores(cinza).
+cores(tijolo).
 
 %2)
 
@@ -111,5 +124,32 @@ dfs2(Act,Dest,LA,F,Cam):-
 %chamada recursiva
     dfs2(X,Dest,[X|LA],F1,Cam).
 
+	%9)
+
+% Algoritmo Sequencial Aproximado (Welsh e Powell)
+
+colorir_mapa(C):-
+    findall((N,P),(pais(P,C,_),contaVizinhos(P,N)),LP),
+    sort(LP,SLP),
+    inverte(SLP,ILP),
+    findall(CO,cores(CO),LC),
+    atribuir_cor(ILP,LC).
+
+
+atribuir_cor([(_,P1),(H1,P2)|T1],[C|T2]):-
+    %assertz(cor(C,P1)),
+    write('..'),
+    write(C),
+    write('..'),
+    write(P1),
+    vizinho(P1,P2),
+    atribuir_cor([(H1,P2)|T1],T2);
+    atribuir_cor([(H1,P2)|T1],[C|T2]).
+
+
+contaVizinhos(P,N):-
+    findall((P,X),vizinho(P,X),L),
+    length(L,Y),
+    N is Y.
 
 
