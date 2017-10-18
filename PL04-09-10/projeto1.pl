@@ -124,6 +124,43 @@ dfs2(Act,Dest,LA,F,Cam):-
 %chamada recursiva
     dfs2(X,Dest,[X|LA],F1,Cam).
 
+%8)
+
+%antes de executar o 8
+% set_prolog_flag(answer_write_options, [quoted(true), portray(true),
+% spacing(next_argument)] ).
+
+
+roteiros(O,F,Cam,Cont):-
+    NF is F+1,
+    findall(C,caminho(O,NF,C, Cont),Cam).
+
+caminho(Orig,F,Cam, Cont):-
+    caminho2(Orig,[Orig],F,Cam, Cont),
+    length(Cam,F).
+
+caminho2(_,0,_, _).
+
+caminho2(_,LA,F,Cam, _):-
+    F>0,
+%caminho actual esta invertido
+    reverse(LA,Cam).
+
+caminho2(Act,LA,F,Cam, Cont):-
+    F1 is F-1,
+    F1>0,
+%testar ligacao entre ponto
+%actual e um qualquer X
+    vizinho(Act,X),
+%o pais tem de pertencer ao continente definido
+    pais(X, Cont, _),
+%testar nao circularidade p/ nao
+%visitar nodos ja visitados
+    \+ member(X,LA),
+%chamada recursiva
+    caminho2(X,[X|LA],F1,Cam, Cont).
+
+
 	%9)
 
 % Algoritmo Sequencial Aproximado (Welsh e Powell)
@@ -152,39 +189,27 @@ contaVizinhos(P,N):-
     length(L,Y),
     N is Y.
 
+%10)
 
-%8)
+cor(amarelo, portugal).
+cor(amarelo, espanha).
+cor(azul, franca).
 
-%antes de executar o 8
-% set_prolog_flag(answer_write_options, [quoted(true), portray(true),
-% spacing(next_argument)] ).
+checkCores(R):-
+    findall(X, cor(_, X), P),
+    write(P),
+    listar(P, R),
+    write(R).
 
+listar([], _).
 
-roteiros(O,D,F,Cam,Cont):-
-    NF is F+1,
-    findall(C,caminho(O,D,NF,C, Cont),Cam).
+listar([H | T], R):-
+    findall(X, (vizinho(X, H), cor(_, X)), V),
+    interseta(V, [], R, T).
 
-caminho(Orig,Dest,F,Cam, Cont):-
-    caminho2(Orig,Dest,[Orig],F,Cam, Cont),
-    length(Cam,F).
+interseta([], L, R, T):-
+    listar(T, [L | R]).
 
-caminho2(_,_,0,_, _).
-
-caminho2(Dest,Dest,LA,F,Cam, _):-
-    F>0,
-%caminho actual esta invertido
-    reverse(LA,Cam).
-
-caminho2(Act,Dest,LA,F,Cam, Cont):-
-    F1 is F-1,
-    F1>0,
-%testar ligacao entre ponto
-%actual e um qualquer X
-    vizinho(Act,X),
-%o pais tem de pertencer ao continente definido
-    pais(X, Cont, _),
-%testar nao circularidade p/ nao
-%visitar nodos ja visitados
-    \+ member(X,LA),
-%chamada recursiva
-    caminho2(X,Dest,[X|LA],F1,Cam,Cont).
+interseta([H | T], L, R, T):-
+    cor(C1, H),
+    interseta(T, [(H, C1) | L], R, T).
