@@ -153,3 +153,38 @@ contaVizinhos(P,N):-
     N is Y.
 
 
+%8)
+
+%antes de executar o 8
+% set_prolog_flag(answer_write_options, [quoted(true), portray(true),
+% spacing(next_argument)] ).
+
+
+roteiros(O,D,F,Cam,Cont):-
+    NF is F+1,
+    findall(C,caminho(O,D,NF,C, Cont),Cam).
+
+caminho(Orig,Dest,F,Cam, Cont):-
+    caminho2(Orig,Dest,[Orig],F,Cam, Cont),
+    length(Cam,F).
+
+caminho2(_,_,0,_, _).
+
+caminho2(Dest,Dest,LA,F,Cam, _):-
+    F>0,
+%caminho actual esta invertido
+    reverse(LA,Cam).
+
+caminho2(Act,Dest,LA,F,Cam, Cont):-
+    F1 is F-1,
+    F1>0,
+%testar ligacao entre ponto
+%actual e um qualquer X
+    vizinho(Act,X),
+%o pais tem de pertencer ao continente definido
+    pais(X, Cont, _),
+%testar nao circularidade p/ nao
+%visitar nodos ja visitados
+    \+ member(X,LA),
+%chamada recursiva
+    caminho2(X,Dest,[X|LA],F1,Cam,Cont).
