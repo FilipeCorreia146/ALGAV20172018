@@ -1,6 +1,5 @@
 :-include('paises.pl').
 :-dynamic cor/2.
-:-dynamic interseta/3.
 
 cores(azul).
 cores(amarelo).
