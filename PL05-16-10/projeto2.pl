@@ -1,3 +1,5 @@
+:-dynamic cost/2.
+
 % -----------------------------------------------------------------------
 % Trabalho prático: factos de cidades com localização baseada em
 % latitude e longitude e predicado auxiliar para calcular a distância
@@ -84,22 +86,65 @@ distance(Lat1, Lon1, Lat2, Lon2, Dis2):-
 %
 
 
-tsp1(C,L):-
-    findall(X,(city(X,_,_), not(X==C)),LS),
-    findall([C|E],(permutation(LS,E)),NL),
-    custos(C,CustoMin, NL).
+%tsp1(C,L):-
+ %   findall(X,(city(X,_,_), not(X==C)),LS),
+  %  findall([C|E],(permutation(LS,E)),NL),
+   % custos(C,CustoMin, NL).
 
-custos(C, CustoMin,[H | T]):-
-    custos2(C, , M),
-    CustoMin > M,
-    CustoMin is M,
-    custos(C,T).
+%custos(C, CustoMin,[H | T]):-
+ %   custos2(C, , M),
+  %  CustoMin > M,
+   % CustoMin is M,
+    %custos(C,T).
 
-custos2(_, [], _).
+%custos2(_, [], _).
 
-custos2(C, NL, M):-
+%custos2(C, NL, M):-
 
+first(F, [F|_]).
 
+minor([X | R], M):-
+    minor(R, X, M).
+
+minor([], X, X).
+
+minor([Y | R], X, M):-
+    X<Y, !,
+    minor(R, X, M).
+
+minor([Y | R], _, M):-
+    minor(R, Y, M).
+
+tsp1(C, L):-
+    findall(X, (city(X, _, _), not(X==C)), Others),
+    findall([C | Perm], (permutation(Others, Perm)), NewL),
+    costs(C, NewL, L),
+    write(L).
+
+costs(C, NewL, L):-
+    costs2(C, NewL),
+    findall(X, (cost(Path, X), first(C, Path), last(C, Path)), Every),
+    minor(Every, Min),
+    findall(Y, cost(Y, Min), L).
+
+costs2(_, []).
+
+costs2(C, [H | T]):-
+    calculateCost(C, H, 0, H, C),
+    costs2(C, T).
+
+calculateCost(C, [], FinalCost, All, Act):-
+    %last(H, Last),
+    dist_cities(Act, C, D),
+    FC is FinalCost+D,
+    append(All, C, Final),
+    assertz(cost(Final, FC)).
+
+calculateCost(C, [H | T], FinalCost, All, Act):-
+    first(Act, T),
+    dist_cities(H, Act, Dist),
+    FC is FinalCost+Dist,
+    calculateCost(C, T, FC, All, Act).
 
 
 
