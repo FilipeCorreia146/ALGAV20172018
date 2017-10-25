@@ -136,6 +136,32 @@ calc_dist(City,[H|T],DistanceList):-
     dist_cities(City,H,Dist),
     append([Dist-H],DistanceList1,DistanceList).
 
+	
+	tsp2(City,List):-
+    findall(X,(city(X,_,_), not(X==City)),TempList),
+    find_closest(City,TempList,List).
+
+
+find_closest(City,TempList,List):-
+    append([City],[],List1),
+    calc_dist(City,TempList,DistanceList),
+    sort(DistanceList,OrderedList),
+    getFirst(OrderedList,OtherCity),
+    append([OtherCity],List1, List).
+
+
+getFirst([_-H|_],H).
+
+calc_dist(_,[],_).
+
+calc_dist(City,[H|[]],DistanceList):-
+    dist_cities(City,H,Dist),
+    append([Dist-H],[],DistanceList).
+
+calc_dist(City,[H|T],DistanceList):-
+    calc_dist(City,T,DistanceList1),
+    dist_cities(City,H,Dist),
+    append([Dist-H],DistanceList1,DistanceList).
 
 
 
