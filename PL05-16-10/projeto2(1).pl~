@@ -109,8 +109,6 @@ custos2(C, [H1,H2|T], M):-
     dist_cities(H1,H2,Dist),
     M is M1 + Dist.
 
-tsp2(C,L):-
-
 
 
 

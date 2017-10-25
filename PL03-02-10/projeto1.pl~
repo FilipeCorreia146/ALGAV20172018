@@ -1,4 +1,17 @@
 :-include('paises.pl').
+:- dynamic cor/2.
+
+cores(azul).
+cores(amarelo).
+cores(vermelho).
+cores(preto).
+cores(branco).
+cores(verde).
+cores(lilas).
+cores(ciano).
+cores(magenta).
+cores(cinza).
+cores(tijolo).
 
 %2)
 
@@ -70,15 +83,20 @@ roteiro(O,D,F,Cam):-
     findall(C,dfs(O,D,F,C),Cam).
 
 dfs(Orig,Dest,F,Cam):-
-    dfs2(Orig,Dest,[Orig],Cam),
+    dfs2(Orig,Dest,[Orig],F,Cam),
     length(Cam,F).
 %condicao final: nodo actual = destino
 
-dfs2(Dest,Dest,LA,Cam):-
+dfs2(_,_,0,_).
+
+dfs2(Dest,Dest,LA,F,Cam):-
+    F>0,
 %caminho actual esta invertido
     reverse(LA,Cam).
 
-dfs2(Act,Dest,LA,Cam):-
+dfs2(Act,Dest,LA,F,Cam):-
+    F1 is F-1,
+    F1>0,
 %testar ligacao entre ponto
 %actual e um qualquer X
     vizinho(Act,X),
@@ -86,7 +104,94 @@ dfs2(Act,Dest,LA,Cam):-
 %visitar nodos ja visitados
     \+ member(X,LA),
 %chamada recursiva
-    dfs2(X,Dest,[X|LA],Cam).
+    dfs2(X,Dest,[X|LA],F1,Cam).
+
+
+
+%9)
+
+% Algoritmo Sequencial Aproximado (Welsh e Powell)
+
+colorir_mapa(C):-
+    findall((N,P),(pais(P,C,_),contaVizinhos(P,N)),LP),
+    sort(LP,SLP),
+    inverte(SLP,ILP),
+    findall(CO,cores(CO),LC),
+    atribuir_cor(ILP,LC).
+
+
+atribuir_cor([(_,P1),(H1,P2)|T1],[C|T2]):-
+    assertz(cor(C,P1)),
+    vizinho(P1,P2),
+    atribuir_cor([(H1,P2)|T1],T2);
+    atribuir_cor([(H1,P2)|T1],[C|T2]).
+
+
+contaVizinhos(P,N):-
+    findall((P,X),vizinho(P,X),L),
+    length(L,Y),
+    N is Y.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 :-include('paises.pl').
 
+
 %2)
 
 vizinho(X,Y):-
@@ -92,6 +93,71 @@ dfs2(Act,Dest,LA,F,Cam):-
     \+ member(X,LA),
 %chamada recursiva
     dfs2(X,Dest,[X|LA],F1,Cam).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
