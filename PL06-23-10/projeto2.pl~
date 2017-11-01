@@ -112,15 +112,30 @@ custos2(C, [H1,H2|T], M):-
 
 tsp2(City,List):-
     findall(X,(city(X,_,_), not(X==City)),TempList),
-    find_closest(City,TempList,List).
+    find_closest(City,TempList,List), !.
 
 
-find_closest(City,TempList,List):-
+find_closest(_,[],List):-
+    reverse(List,List1),
+    write(List1),
+    !.
+
+find_closest(City,TempList,[]):-
     append([City],[],List1),
     calc_dist(City,TempList,DistanceList),
     sort(DistanceList,OrderedList),
     getFirst(OrderedList,OtherCity),
-    append(OtherCity,List1, List).
+    append([OtherCity],List1, List),
+    delete(TempList,OtherCity,TempList1),
+    find_closest(City,TempList1,List).
+
+find_closest(City,TempList,List):-
+    calc_dist(City,TempList,DistanceList),
+    sort(DistanceList,OrderedList),
+    getFirst(OrderedList,OtherCity),
+    append([OtherCity],List,List1),
+    delete(TempList,OtherCity,TempList1),
+    find_closest(City,TempList1,List1).
 
 
 getFirst([_-H|_],H).
@@ -135,6 +150,40 @@ calc_dist(City,[H|T],DistanceList):-
     calc_dist(City,T,DistanceList1),
     dist_cities(City,H,Dist),
     append([Dist-H],DistanceList1,DistanceList).
+
+
+%tsp2(City,List):-
+%    findall(X,(city(X,_,_), not(X==City)),TempList),
+%    find_closest(City,TempList,List).
+
+
+%find_closest(City,TempList,List):-
+%    append([City],[],List1),
+%    calc_dist(City,TempList,DistanceList),
+%    sort(DistanceList,OrderedList),
+%    getFirst(OrderedList,OtherCity),
+%    append([OtherCity],List1, List),
+%    delete(TempList,OtherCity,TempList1),
+%    find_closest(City,TempList1,List).
+
+
+%getFirst([_-H|_],H).
+
+%calc_dist(_,[],_).
+
+%calc_dist(City,[H|[]],DistanceList):-
+%    dist_cities(City,H,Dist),
+%    append([Dist-H],[],DistanceList).
+
+%calc_dist(City,[H|T],DistanceList):-
+%    calc_dist(City,T,DistanceList1),
+%  dist_cities(City,H,Dist),
+%    append([Dist-H],DistanceList1,DistanceList).
+
+
+
+
+
 
 
 
