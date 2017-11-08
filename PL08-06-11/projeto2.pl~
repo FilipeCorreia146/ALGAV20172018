@@ -57,11 +57,23 @@ city(minsk,53.905117,27.5611845).
 %city(kiev,50.440951,30.5271814).
  %city(cardiff,51.4813069,-3.1804979).
 
+linearCoord(City,X,Y):-
+	city(City,Lat,Lon),
+	geo2linear(Lat,Lon,X,Y).
+
+geo2linear(Lat,Lon,X,Y):-
+	degrees2radians(Lat,LatR),
+	degrees2radians(Lon,LonR),
+	X is round(6371*cos(LatR)*cos(LonR)),
+	Y is round(6371*cos(LatR)*sin(LonR)).
+
 %  dist_cities(brussels,prague,D).
 %  D = 716837.
 dist_cities(C1,C2,Dist):-
-    city(C1,Lat1,Lon1),
-    city(C2,Lat2,Lon2),
+    %city(C1,Lat1,Lon1),
+    %city(C2,Lat2,Lon2),
+    linearCoord(C1,Lat1,Lon1),
+    linearCoord(C2,Lat2,Lon2),
     distance(Lat1,Lon1,Lat2,Lon2,Dist).
 
 degrees2radians(Deg,Rad):-
@@ -84,7 +96,6 @@ distance(Lat1, Lon1, Lat2, Lon2, Dis2):-
 % distance(50.8462807,4.3547273,50.0878114,14.4204598,D).
 % Online: http://www.movable-type.co.uk/scripts/latlong.html
 %
-
 
 tsp1(C,L):-
     findall(X,(city(X,_,_), not(X==C)),LS),
@@ -115,9 +126,9 @@ tsp2(City,L):-
     find_closest(City,TempList,_,L), !.
 
 
-find_closest(_,[],List,L):-
-    reverse(List,L),
-    write(L),
+find_closest(City,[],List,L):-
+    %append(City,List),
+    reverse([City|List],L),
     !.
 
 find_closest(City,TempList,[],L):-
@@ -150,7 +161,6 @@ calc_dist(City,[H|T],DistanceList):-
     calc_dist(City,T,DistanceList1),
     dist_cities(City,H,Dist),
     append([Dist-H],DistanceList1,DistanceList).
-
 
 % Given three colinear points p, q, r, the function checks if
 % point q lies on line segment 'pr'
@@ -210,11 +220,9 @@ doIntersect(P1,Q1,P2,Q2):-
     O4 == 0, onSegment(P2, Q1, Q2),!
     ).
 
+tsp3(City,LF):-
+    remover_cruzamentos(City,_,LF).
 
 
-
-
-
-
-
-
+remover_cruzamentos(City,L,LF):-
+    tsp2(City,L).
