@@ -127,7 +127,6 @@ tsp2(City,L):-
 
 
 find_closest(City,[],List,L):-
-    %append(City,List),
     reverse([City|List],L),
     !.
 
@@ -226,3 +225,27 @@ tsp3(City,LF):-
 
 remover_cruzamentos(City,L,LF):-
     tsp2(City,L).
+
+
+
+
+
+tsp4(City, List):-
+	initialSolution(City,L),
+	.
+
+
+
+initialSolution(Orig,L):-
+	findall(X,(city(X,_,_),X\=Orig),L1),
+	random_permutation(L1,L).
+
+totalDistance([],0).
+totalDistance([_],0).
+totalDistance([X,Y|L],T):-
+	dist_cities(X,Y,Cl),
+	totalDistance([Y|L],T1),
+	T is T1 + Cl.
+
+
+

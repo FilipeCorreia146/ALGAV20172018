@@ -225,3 +225,48 @@ tsp3(City,LF):-
 
 remover_cruzamentos(City,L,LF):-
     tsp2(City,L).
+
+
+
+
+
+tsp4(City, List):-
+	initialSolution(City,L),
+	totalDistance(L,D1),
+	.
+
+
+newAdjacent(S1,Sn):-
+	length(S1,T1),
+	random_between(1,T1,Pos1),
+	random_between(1,T1,Pos2),
+	nth1(Pos1,S1,E1),
+	nth1(Pos2,S1,E2),
+	%removeElementPos(Pos1,S1,S2),
+	%insertElementPos(Pos1,E2,S2,S3),
+	%removeElementPos(Pos2,S3,S4),
+	%insertElementPos(Pos2,E1,S4,Sn).
+
+removeElementPos(_,[],_).
+
+removeElementPos(Pos1,[H|T], S2):-
+	Pos1 > 0
+	NPos is Pos1 - 1
+	removeElementPos(NPos,T,S2);
+
+	.
+
+
+initialSolution(Orig,L):-
+	findall(X,(city(X,_,_),X\=Orig),L1),
+	random_permutation(L1,L).
+
+totalDistance([],0).
+totalDistance([_],0).
+totalDistance([X,Y|L],T):-
+	dist_cities(X,Y,Cl),
+	totalDistance([Y|L],T1),
+	T is T1 + Cl.
+
+
+
