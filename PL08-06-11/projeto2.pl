@@ -70,10 +70,10 @@ geo2linear(Lat,Lon,X,Y):-
 %  dist_cities(brussels,prague,D).
 %  D = 716837.
 dist_cities(C1,C2,Dist):-
-    %city(C1,Lat1,Lon1),
-    %city(C2,Lat2,Lon2),
-    linearCoord(C1,Lat1,Lon1),
-    linearCoord(C2,Lat2,Lon2),
+    city(C1,Lat1,Lon1),
+    city(C2,Lat2,Lon2),
+    %linearCoord(C1,Lat1,Lon1),
+    %linearCoord(C2,Lat2,Lon2),
     distance(Lat1,Lon1,Lat2,Lon2,Dist).
 
 degrees2radians(Deg,Rad):-
@@ -219,21 +219,86 @@ doIntersect(P1,Q1,P2,Q2):-
     O4 == 0, onSegment(P2, Q1, Q2),!
     ).
 
+%4
+
+%transforma uma lista numa lista de segmentos
+seg([_],[]).
+
+seg([X,Y|R],[(X,Y)|R2]):-
+	seg([Y|R],R2).
+
+%verifica se o segmemto é membro da lista
+seg_membro((X,Y),L):-
+	member((X,Y),L);
+	member((Y,X),L).
+
+%transforma a lista de segmentos num circuito
+circuito(City, [City], []):- !.
+
+circuito(City, LF, Pares) :-
+    Pares=[_|_],
+    ((member((City,C),Pares),
+      delete(Pares,(City,C),NovosPares));
+    (member((C,City),Pares),
+     delete(Pares,(C,City),NovosPares))),
+    circuito(C,Circuito,NovosPares),
+    append([City],Circuito,LF), !.
+
+%retorna o circuito obtido através da heuristica do vizinho mais próximo
+%(greedy) com remoção de cruzamentos
 tsp3(City,LF):-
-    remover_cruzamentos(City,_,LF).
+    tsp2(City,L),
+    seg(L,Pares),
+    verifica_cruzamentos(LI,Pares),
+    circuito(City,LF,LI).
 
+% remover pares de segmentos cruzados enquanto existirem cruzamentos
+% na solucao
+verifica_cruzamentos(LF,Pares):-
 
-remover_cruzamentos(City,L,LF):-
-    tsp2(City,L).
+	%vai buscar dois segmentos
+	member((P1,Q1),Pares),
+	member((P2,Q2),Pares),
+	%as cidades têm de ser todas diferentes
+	%pois os segmentos têm de ser não colineares
+	not(P1==P2),
+	not(P1==Q2),
+	not(Q1==P2),
+	not(Q1==Q2),
 
+	linearCoord(P1,P1x,P1y), A = (P1x,P1y),
+	linearCoord(Q1,Q1x,Q1y), B = (Q1x,Q1y),
+	linearCoord(P2,P2x,P2y), C = (P2x,P2y),
+	linearCoord(Q2,Q2x,Q2y), D = (Q2x,Q2y),
 
+	%verifica se os segmentos se intersetam
+	%doIntersect(P1,Q1,P2,Q2),
+	doIntersect(A,B,C,D),
 
+	%caso se intersetem os segmentos sao eliminados da lista
+	delete(Pares,(P1,Q1),SemP1eQ1),
+	delete(SemP1eQ1,(P2,Q2),NovosPares),
 
+	%arbitrariamente selecionar um dos segmentos e a partir de
+	%um dos nodos desse segmento selecionar o nodo mais
+	%proximo do outro segmento eliminado
+	dist_cities(P1, P2, CustoP1P2),
+	dist_cities(P1, Q2, CustoP1Q2),
 
-tsp4(City, List):-
-	initialSolution(City,L),
-	totalDistance(L,D1),
-	.
+	%caso P1-P2 tenha menor custo ver se ja existe na lista
+	%acrescentar P1,P2 e P1,Q2
+	((CustoP1P2<CustoP1Q2,
+	  not(seg_membro((P1,P2),NovosPares)),
+	  not(seg_membro((Q1,Q2),NovosPares)),
+	  append([(P1,P2),(Q1,Q2)], NovosPares, L2));
+	((not(seg_membro((P1,Q2),NovosPares)),
+	  not(seg_membro((Q1,P1),NovosPares)),
+	  append([(P1,Q2),(Q1,P1)], NovosPares, L2));
+	  append([(P1,P2),(Q1,Q2)], NovosPares, L2))),
+
+	verifica_cruzamentos(LF,L2).
+
+verifica_cruzamentos(LF,LF).
 
 
 newAdjacent(S1,Sn):-
@@ -250,11 +315,9 @@ newAdjacent(S1,Sn):-
 removeElementPos(_,[],_).
 
 removeElementPos(Pos1,[H|T], S2):-
-	Pos1 > 0
-	NPos is Pos1 - 1
-	removeElementPos(NPos,T,S2);
-
-	.
+	Pos1 > 0,
+	NPos is Pos1 - 1,
+	removeElementPos(NPos,T,S2).
 
 
 initialSolution(Orig,L):-
