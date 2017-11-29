@@ -27,7 +27,7 @@ playerMark:-
 	  nl, write('Color for human player ? (x or o)'), nl,
 	  read(Player), nl,
 	  (Player == o; Player == x),
-          EmptyBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          EmptyBoard = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	  show(EmptyBoard), nl,
           play([x, play, EmptyBoard], Player).
 
@@ -63,22 +63,23 @@ play([Player, play, Board], Player) :- !,
 % play(+Position, +HumanPlayer)
 % If it is not human who must play -> Computer must play
 % Compute the best move for computer with minimax or alpha-beta.
-play([Player, play, Board], HumanPlayer) :-
-    nl, write('Computer play : '), nl, nl,
-    % Compute the best move
-    bestMove([Player, play, Board], [NextPlayer, State, BestSuccBoard]),
-    show(BestSuccBoard),
-    (
-      State = win, !,                                 % If Player win -> stop
-      nl, write('End of game : '),
-      write(Player), write(' win !'), nl, nl
-      ;
-      State = draw, !,                                % If draw -> stop
-      nl, write('End of game : '), write(' draw !'), nl, nl
-      ;
-      % Else -> continue the game
-      play([NextPlayer, play, BestSuccBoard], HumanPlayer)
-    ).
+%play([Player, play, Board], HumanPlayer) :-
+%    nl, write('Computer play : '), nl, nl,
+%    % Compute the best move
+%    bestMove([Player, play, Board], [NextPlayer, State,
+%    BestSuccBoard]),
+%    show(BestSuccBoard),
+%    (
+%      State = win, !, %  If Player win -> stop
+%      nl, write('End of game : '),
+%      write(Player), write(' win !'), nl, nl
+%      ;
+%      State = draw, !,                                % If draw -> stop
+%      nl, write('End of game : '), write(' draw !'), nl, nl
+%      ;
+%      % Else -> continue the game
+%      play([NextPlayer, play, BestSuccBoard], HumanPlayer)
+%).
 
 
 
@@ -91,7 +92,25 @@ nextPlayer(x, o).
 
 humanMove([X1, play, Board], [X2, State, NextBoard], Pos) :-
     nextPlayer(X1, X2),
-    set1(Pos, X1, Board, NextBoard),
+    (Pos1 is Pos +35,
+     nth1(Pos1,Board,X,_),
+    X == 0;
+    Pos1 is Pos + 28,
+    nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos +21,
+     nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos + 14,
+     nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos + 7,
+     nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos,
+     nth1(Pos1, Board, X,_),
+    X ==0),
+    set1(Pos1, X1, Board, NextBoard),
     decide(X1,NextBoard,State).
 
 decide(X,Board,win):-
@@ -111,30 +130,21 @@ set1(P, E, [X|Ls], [X|L2s]) :-
     P1 is P - 1,
     set1(P1, E, Ls, L2s).
 
-
 % show(+Board)
 % Show the board to current output.
-show([X1, X2, X3, X4, X5, X6, X7, X8, X9, X10, X11, X12, X13, X14, X15, X16]) :-
-    write('   '), show2(X1),
+show([X1, X2, X3, X4, X5, X6, X7|T]) :-
+    write(' | '), show2(X1),
     write(' | '), show2(X2),
     write(' | '), show2(X3),
-    write(' | '), show2(X4), nl,
-    write('  ---------------'), nl,
-    write('   '), show2(X5),
+    write(' | '), show2(X4),
+    write(' | '), show2(X5),
     write(' | '), show2(X6),
     write(' | '), show2(X7),
-    write(' | '), show2(X8), nl,
-    write('  ---------------'), nl,
-    write('   '), show2(X9),
-    write(' | '), show2(X10),
-    write(' | '), show2(X11),
-    write(' | '), show2(X12), nl,
-    write('  ---------------'), nl,
-    write('   '), show2(X13),
-    write(' | '), show2(X14),
-    write(' | '), show2(X15),
-    write(' | '), show2(X16), nl.
+    write(' | '), nl,
+    show(T).
 
+show([]):-
+    write(' |___|___|___|___|___|___|___| ').
 
 % show2(+Term)
 % Write the term to current outupt
@@ -145,3 +155,5 @@ show2(X) :-
 
 show2(X) :-
     write(X).
+
+

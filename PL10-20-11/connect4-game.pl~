@@ -27,7 +27,7 @@ playerMark:-
 	  nl, write('Color for human player ? (x or o)'), nl,
 	  read(Player), nl,
 	  (Player == o; Player == x),
-          EmptyBoard = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          EmptyBoard = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	  show(EmptyBoard), nl,
           play([x, play, EmptyBoard], Player).
 
@@ -91,7 +91,25 @@ nextPlayer(x, o).
 
 humanMove([X1, play, Board], [X2, State, NextBoard], Pos) :-
     nextPlayer(X1, X2),
-    set1(Pos, X1, Board, NextBoard),
+    (Pos1 is Pos +35,
+     nth1(Pos1,Board,X,_),
+    X == 0;
+    Pos1 is Pos + 28,
+    nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos +21,
+     nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos + 14,
+     nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos + 7,
+     nth1(Pos1, Board, X,_),
+    X ==0;
+    Pos1 is Pos,
+     nth1(Pos1, Board, X,_),
+    X ==0),
+    set1(Pos1, X1, Board, NextBoard),
     decide(X1,NextBoard,State).
 
 decide(X,Board,win):-
@@ -111,23 +129,21 @@ set1(P, E, [X|Ls], [X|L2s]) :-
     P1 is P - 1,
     set1(P1, E, Ls, L2s).
 
-
 % show(+Board)
 % Show the board to current output.
-show([X1, X2, X3, X4, X5, X6, X7, X8, X9]) :-
-    write('   '), show2(X1),
+show([X1, X2, X3, X4, X5, X6, X7|T]) :-
+    write(' | '), show2(X1),
     write(' | '), show2(X2),
-    write(' | '), show2(X3), nl,
-    write('  -----------'), nl,
-    write('   '), show2(X4),
+    write(' | '), show2(X3),
+    write(' | '), show2(X4),
     write(' | '), show2(X5),
-    write(' | '), show2(X6), nl,
-    write('  -----------'), nl,
-    write('   '), show2(X7),
-    write(' | '), show2(X8),
-    write(' | '), show2(X9), nl.
+    write(' | '), show2(X6),
+    write(' | '), show2(X7),
+    write(' | '), nl,
+    show(T).
 
-
+show([]):-
+    write(' |___|___|___|___|___|___|___| ').
 
 % show2(+Term)
 % Write the term to current outupt
@@ -138,3 +154,5 @@ show2(X) :-
 
 show2(X) :-
     write(X).
+
+
