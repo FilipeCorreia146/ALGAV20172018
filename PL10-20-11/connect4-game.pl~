@@ -37,9 +37,10 @@ playerMark:-
 % If next player to play in position is equal to HumanPlayer -> Human must play
 % Ask to human what to do.
 play([Player, play, Board], Player) :- !,
-    nl, write('Next move ?'), nl,
-    read(Pos), nl,                                  % Ask human where to play
-    (
+    nl, write('Next move ? (1-7)'), nl,
+    read(Pos), nl, % Ask human where to play
+    ( Pos <8,
+      Pos >0,
       humanMove([Player, play, Board], [NextPlayer, State, NextBoard], Pos), !,
       show(NextBoard),
       (
@@ -56,29 +57,29 @@ play([Player, play, Board], Player) :- !,
       ;
       write('-> Bad Move !'), nl,                % If humanMove fail -> bad move
       play([Player, play, Board], Player)        % Ask again
-    ).
-
+   ).
 
 
 % play(+Position, +HumanPlayer)
 % If it is not human who must play -> Computer must play
 % Compute the best move for computer with minimax or alpha-beta.
-play([Player, play, Board], HumanPlayer) :-
-    nl, write('Computer play : '), nl, nl,
-    % Compute the best move
-    bestMove([Player, play, Board], [NextPlayer, State, BestSuccBoard]),
-    show(BestSuccBoard),
-    (
-      State = win, !,                                 % If Player win -> stop
-      nl, write('End of game : '),
-      write(Player), write(' win !'), nl, nl
-      ;
-      State = draw, !,                                % If draw -> stop
-      nl, write('End of game : '), write(' draw !'), nl, nl
-      ;
-      % Else -> continue the game
-      play([NextPlayer, play, BestSuccBoard], HumanPlayer)
-    ).
+%play([Player, play, Board], HumanPlayer) :-
+%    nl, write('Computer play : '), nl, nl,
+%    % Compute the best move
+%    bestMove([Player, play, Board], [NextPlayer, State,
+%    BestSuccBoard]),
+%    show(BestSuccBoard),
+%    (
+%      State = win, !, %  If Player win -> stop
+%      nl, write('End of game : '),
+%      write(Player), write(' win !'), nl, nl
+%      ;
+%      State = draw, !,                                % If draw -> stop
+%      nl, write('End of game : '), write(' draw !'), nl, nl
+%      ;
+%      % Else -> continue the game
+%      play([NextPlayer, play, BestSuccBoard], HumanPlayer)
+%).
 
 
 
@@ -113,7 +114,7 @@ humanMove([X1, play, Board], [X2, State, NextBoard], Pos) :-
     decide(X1,NextBoard,State).
 
 decide(X,Board,win):-
-    winPos(X,Board),!.
+    isWin(X,Board),!.
 decide(X,Board,draw):-
     drawPos(X,Board),!.
 decide(_,_,play).
