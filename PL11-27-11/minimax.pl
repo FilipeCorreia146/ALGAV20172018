@@ -3,18 +3,17 @@
 % minimax(Pos, BestNextPos, Val)
 % Pos is a position, Val is its minimax value.
 % Best move from Pos leads to position BestNextPos.
-minimax(Pos, BestNextPos, Val, Depth) :-
+minimax([X,play,List], BestNextPos, Val, Depth) :-
     Depth > 0,
     Depth1 is  Depth-1,
-    moves(Pos,NextPosList),
+    moves([X,play,List],NextPosList),
     best(NextPosList, BestNextPos, Val, Depth1),!.
 
-
-minimax(Pos,_,Val,Depth):-
-    Depth == 0,
+minimax(Pos,_,Val,0):-
     utility(Pos,Val).
-	
-best([],_,_,_).
+
+minimax(Pos,_,Val,_):-
+    utility(Pos,Val).
 
 best([Pos], Pos, Val, Depth) :-
     minimax(Pos, _, Val, Depth), !.

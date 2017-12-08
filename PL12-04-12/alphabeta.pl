@@ -1,11 +1,17 @@
 :- module(alphabeta, [alphabeta/6]).
 
-alphabeta(Pos, Alpha, Beta, GoodPos, Val, Depth) :-
+alphabeta([X,play,Pos], Alpha, Beta, GoodPos, Val, Depth) :-
   Depth > 0,
   Depth1 is Depth-1,
-  moves(Pos, PosList), !,
-  boundedbest(PosList, Alpha, Beta, GoodPos, Val, Depth1);
-  utility(Pos, Val).
+  moves([X,play,Pos], PosList),!,
+  PosList \=[],
+  boundedbest(PosList, Alpha, Beta, GoodPos, Val, Depth1).
+
+alphabeta(Pos,_,_,_,Val,0):-
+   utility(Pos, Val).
+
+alphabeta(Pos,_,_,_,Val,_):-
+  utility(Pos,Val).
 
 boundedbest([Pos|PosList], Alpha, Beta, GoodPos, GoodVal, Depth) :-
   alphabeta(Pos, Alpha, Beta, _, Val, Depth),

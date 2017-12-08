@@ -3,19 +3,62 @@
 moves(Pos,NextPosList):-
  findall(NextPos, move(Pos, NextPos), NextPosList).
 
-move([X1, play, Board], [X2, win, NextBoard]) :-
+move([X1, play, Board], Ret) :-
     nextPlayer(X1, X2),
     move_aux(X1,7,Board, NextBoard),
-    isWin(X1, NextBoard), !.
+    (winMove(X1,X2,NextBoard, Ret);
+     threeMove(X1,X2,NextBoard, Ret);
+     twoMove(X1,X2,NextBoard,Ret);
+     oneMove(X1,X2,NextBoard,Ret);
+     drawMove(X1,X2,NextBoard,Ret);
+    Ret = [X2, play, NextBoard]).
 
-move([X1, play, Board], [X2, draw, NextBoard]) :-
-    nextPlayer(X1, X2),
-    move_aux(X1,7,Board, NextBoard),
-    drawPos(X1,NextBoard), !.
 
-move([X1, play, Board], [X2, play, NextBoard]) :-
-    nextPlayer(X1, X2),
-    move_aux(X1,7,Board, NextBoard).
+winMove(X1,X2,NextBoard,[X2,win,NextBoard]):-
+ isWin(X1, NextBoard),!.
+
+threeMove(X1,X2,NextBoard,[X2,threeInLine, S, NextBoard]):-
+ threeInLine(X1,NextBoard,S),!.
+
+twoMove(X1,X2,NextBoard,[X2,twoInLine, S, NextBoard]):-
+ twoInLine(X1,NextBoard,S),!.
+
+oneMove(X1,X2,NextBoard,[X2,one,S, NextBoard]):-
+ one(X1,NextBoard,S),!.
+
+one(P,L,S):-
+ testOne(P,L,S1),
+ nextPlayer(P,X),
+ testOne(X,L,S2),
+ ST is S1-S2,
+ ST \= 0,
+ S is ST;
+ fail.
+
+testOne(_,[],0).
+
+testOne(P,[H|T],S1):-
+ testOne(P,T,S),
+ ( H == P,
+ S1 is S +1;
+  S1 is S).
+
+drawMove(X1,X2,NextBoard,[X2,draw,NextBoard]):-
+ drawPos(X1,NextBoard),!.
+
+%move([X1, play, Board], [X2, threeInLine, S, NextBoard]) :-
+%    nextPlayer(X1, X2),
+%    move_aux(X1,7,Board, NextBoard),
+%    threeInLine(X1,NextBoard,S), !.
+
+%move([X1, play, Board], [X2, draw, NextBoard]) :-
+%    nextPlayer(X1, X2),
+%    move_aux(X1,7,Board, NextBoard),
+%    drawPos(X1,NextBoard), !.
+
+%move([X1, play, Board], [X2, play, NextBoard]) :-
+%    nextPlayer(X1, X2),
+%    move_aux(X1,7,Board, NextBoard).
 
  %True if NextBoard is Board whith an empty case replaced by Player mark.
 move_aux(P,1,L,LRet):-
@@ -70,9 +113,15 @@ max_to_move([x, _, _]).
 % We will use  1 when MAX win
 %             -1 when MIN win
 %              0 otherwise.
-utility([o, win, _], 1).       % Previous player (MAX) has win.
-utility([x, win, _], -1).      % Previous player (MIN) has win.
+utility([o, win, _], 999).       % Previous player (MAX) has win.
+utility([x, win, _], -999).      % Previous player (MIN) has win.
 utility([_, draw, _], 0).
+utility([_,threeInLine,S,_],R):-
+ R is S*10.
+utility([_,twoInLine,S,_],R):-
+ R is S*5.
+utility([_,one,S,_],R):-
+ R is S.
 utility([_,_,_],0).
 
 isWin(P,L):-
@@ -82,16 +131,9 @@ isWin(P,L):-
 testWin(_,_,[]):- fail.
 
 testWin(P,L,[H|T]):-
-  Pos2 is H +1, Pos3 is H+2, Pos4 is H+3,
- Pos5 is H+7, Pos6 is H+8, Pos7 is H+9, Pos8 is H+10,
- Pos9 is H+14, Pos10 is H+15, Pos11 is H+16, Pos12 is H+17,
- Pos13 is H+21, Pos14 is H+22, Pos15 is H+23, Pos16 is H+24,
-
- nth1(H,L,V1),nth1(Pos2,L,V2), nth1(Pos3,L,V3), nth1(Pos4,L,V4),
- nth1(Pos5,L,V5), nth1(Pos6,L,V6), nth1(Pos7,L,V7), nth1(Pos8,L,V8),
- nth1(Pos9,L,V9), nth1(Pos10,L,V10), nth1(Pos11,L,V11), nth1(Pos12,L,V12),
- nth1(Pos13,L,V13), nth1(Pos14,L,V14), nth1(Pos15,L,V15), nth1(Pos16,L,V16),
- winPos(P,[V1,V2,V3,V4,V5,V6,V7,V8,V9,V10,V11,V12,V13,V14,V15,V16]);
+ allElements(H,[],LE,4,4,16),
+ smallerList(LE,L,RL),
+ winPos(P,RL);
  testWin(P,L,T).
 
 % winPos(+Player, +Board)
@@ -118,12 +160,90 @@ drawPos(_,Board) :-
 % True if W = X = Y = Z = T.
 equal(X, X, X, X, X).
 
+threeInLine(P,L,S):-
+ LPos = [1,2,3,4,5,8,9,10,11,12,15,16,17,18,19,22,23,24,25,26],
+ testThreeInLine(P,L,LPos,S1),
+ nextPlayer(P,X),
+ testThreeInLine(X,L,LPos,S2),
+ ST is S1-S2,
+ ST\=0,
+ S is ST;
+ fail.
 
+testThreeInLine(_,_,[],0).
 
+testThreeInLine(P,L,[H|T],S1):-
+   testThreeInLine(P,L,T,S),
+  allElements(H,[],LE,3,3,9),
+  smallerList(LE,L,RL),
+  (   threeInLinePos(P,RL),
+  S1 is S+1;
+  S1 is S).
 
+threeInLinePos(P, [X1,X2,X3,X4,X5,X6,X7,X8,X9]):-
+ equal(X1,X2,X3,P);
+ equal(X4,X5,X6,P);
+ equal(X7,X8,X9,P);
+ equal(X1,X5,X9,P);
+ equal(X7,X5,X4,P);
+ equal(X1,X4,X7,P);
+ equal(X2,X5,X8,P);
+ equal(X3,X6,X9,P).
 
+equal(X,X,X,X).
 
+twoInLine(P,L,S):-
+ LPos = [1,2,3,4,5,6,8,9,10,11,12,13,15,16,17,18,19,20,22,23,24,25,26,27,29,30,31,32,33,34],
+ testTwoInLine(P,L,LPos,S1),
+ nextPlayer(P,X),
+ testTwoInLine(X,L,LPos,S2),
+ ST is S1-S2,
+ ST \= 0,
+ S is ST;
+ fail.
 
+testTwoInLine(_,_,[],0).
+
+testTwoInLine(P,L,[H|T],S1):-
+  testTwoInLine(P,L,T,S),
+  allElements(H,[],LE,2,2,4),
+  smallerList(LE,L,RL),
+  ( twoInLinePos(P,RL),
+  S1 is S+1;
+  S1 is S).
+
+twoInLinePos(P, [X1,X2,X3,X4]):-
+ equal(X1,X2,P);
+ equal(X3,X4,P);
+ equal(X1,X3,P);
+ equal(X2,X4,P);
+ equal(X1,X4,P);
+ equal(X2,X3,P).
+
+equal(X,X,X).
+
+smallerList([],_,RL):-
+ RL = [].
+
+smallerList([H|T],L,[E|RL]):-
+  smallerList(T,L,RL),
+  nth1(H,L,E).
+
+allElements(_,List,List,0,_,0).
+
+allElements(S,List,LE,0,C,T):-
+ ST is S-C,
+ S1 is ST+7,
+ L1 is C-1,
+ T1 is T-1,
+ S2 is S1+1,
+ allElements(S2,[S1|List],LE,L1,C,T1).
+
+allElements(S,List,LE,L,C,T):-
+ S1 is S+1,
+ L1 is L-1,
+ T1 is T-1,
+ allElements(S1,[S|List],LE,L1,C,T1),!.
 
 
 

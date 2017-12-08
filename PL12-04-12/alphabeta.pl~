@@ -3,13 +3,15 @@
 alphabeta(Pos, Alpha, Beta, GoodPos, Val, Depth) :-
   Depth > 0,
   Depth1 is Depth-1,
-  moves(Pos, PosList), !,
+  moves(Pos, PosList),!,
+  PosList \=[],
   boundedbest(PosList, Alpha, Beta, GoodPos, Val, Depth1);
-  utility(Pos, Val).
+  utility(Pos, Val);
+  true.
 
 boundedbest([Pos|PosList], Alpha, Beta, GoodPos, GoodVal, Depth) :-
   alphabeta(Pos, Alpha, Beta, _, Val, Depth),
-  goodenough(PosList, Alpha, Beta, Pos, Val, GoodPos, GoodVal).
+  goodenough(PosList, Alpha, Beta, Pos, Val, GoodPos, GoodVal, Depth).
 
 goodenough([], _, _, Pos, Val, Pos, Val, _) :- !.
 
