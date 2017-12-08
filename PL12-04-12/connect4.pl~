@@ -6,12 +6,12 @@ moves(Pos,NextPosList):-
 move([X1, play, Board], Ret) :-
     nextPlayer(X1, X2),
     move_aux(X1,7,Board, NextBoard),
-    ( winMove(X1,X2,NextBoard, Ret);
-    ( threeMove(X1,X2,NextBoard, Ret);
-    ( twoMove(X1,X2,NextBoard,Ret);
-    ( oneMove(X1,X2,NextBoard,Ret);
-    ( drawMove(X1,X2,NextBoard,Ret);
-    Ret = [X2, play, NextBoard]))))).
+    (winMove(X1,X2,NextBoard, Ret);
+     threeMove(X1,X2,NextBoard, Ret);
+     twoMove(X1,X2,NextBoard,Ret);
+     oneMove(X1,X2,NextBoard,Ret);
+     drawMove(X1,X2,NextBoard,Ret);
+    Ret = [X2, play, NextBoard]).
 
 
 winMove(X1,X2,NextBoard,[X2,win,NextBoard]):-
@@ -122,7 +122,7 @@ utility([_,twoInLine,S,_],R):-
  R is S*5.
 utility([_,one,S,_],R):-
  R is S.
-%utility([_,_,_],0).
+utility([_,_,_],0).
 
 isWin(P,L):-
  LPos = [1,2,3,4,8,9,10,11,15,16,17,18],

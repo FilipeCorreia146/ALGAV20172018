@@ -1,11 +1,12 @@
 :- module(connect4, [moves/2,min_to_move/1,max_to_move/1,utility/2,winPos/2,drawPos/2, isWin/2]).
 
 moves(Pos,NextPosList):-
- findall(NextPos, move(Pos, NextPos), NextPosList).
+ Cols = [1,2,3,4,5,6,7],
+ findall(NextPos,(member(P,Cols), move(Pos, NextPos,P)), NextPosList).
 
-move([X1, play, Board], Ret) :-
+move([X1, play, Board], Ret,P) :-
     nextPlayer(X1, X2),
-    move_aux(X1,7,Board, NextBoard),
+    move_aux(X1,P,Board, NextBoard),
     (winMove(X1,X2,NextBoard, Ret);
      threeMove(X1,X2,NextBoard, Ret);
      twoMove(X1,X2,NextBoard,Ret);
@@ -61,14 +62,8 @@ drawMove(X1,X2,NextBoard,[X2,draw,NextBoard]):-
 %    move_aux(X1,7,Board, NextBoard).
 
  %True if NextBoard is Board whith an empty case replaced by Player mark.
-move_aux(P,1,L,LRet):-
- placeAtBottom(P,1,L,LRet),!.
-
 move_aux(P,Pos,L,LRet):-
- Pos>1,
- placeAtBottom(P,Pos,L,LRet);
- Pos1 is Pos -1,
- move_aux(P,Pos1,L,LRet).
+ placeAtBottom(P,Pos,L,LRet).
 
 placeAtBottom(P,Pos, L, LRet):-
    (Pos1 is Pos +35,
@@ -113,16 +108,16 @@ max_to_move([x, _, _]).
 % We will use  1 when MAX win
 %             -1 when MIN win
 %              0 otherwise.
-utility([o, win, _], 999).       % Previous player (MAX) has win.
-utility([x, win, _], -999).      % Previous player (MIN) has win.
+utility([o, win, _], 1000).       % Previous player (MAX) has win.
+utility([x, win, _], -1000).      % Previous player (MIN) has win.
 utility([_, draw, _], 0).
 utility([_,threeInLine,S,_],R):-
- R is S*10.
+ R is S*3.
 utility([_,twoInLine,S,_],R):-
- R is S*5.
+ R is S*2.
 utility([_,one,S,_],R):-
  R is S.
-utility([_,_,_],0).
+utility([_,play,_],-999).
 
 isWin(P,L):-
  LPos = [1,2,3,4,8,9,10,11,15,16,17,18],

@@ -5,7 +5,7 @@
 % Compute the best Next Position from Position Pos
 % with minimax or alpha-beta algorithm.
 bestMove(Pos, NextPos) :-
-    minimax(Pos, NextPos, _, 2).
+    minimax(Pos, NextPos, _, 5).
 
 
 % play

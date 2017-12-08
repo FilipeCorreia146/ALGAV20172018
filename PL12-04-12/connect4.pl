@@ -1,11 +1,12 @@
 :- module(connect4, [moves/2,min_to_move/1,max_to_move/1,utility/2,winPos/2,drawPos/2, isWin/2]).
 
 moves(Pos,NextPosList):-
- findall(NextPos, move(Pos, NextPos), NextPosList).
+ Cols = [1,2,3,4,5,6,7],
+ findall(NextPos,(member(P,Cols), move(Pos, NextPos,P)), NextPosList).
 
-move([X1, play, Board], Ret) :-
+move([X1, play, Board], Ret,P) :-
     nextPlayer(X1, X2),
-    move_aux(X1,7,Board, NextBoard),
+    move_aux(X1,P,Board, NextBoard),
     (winMove(X1,X2,NextBoard, Ret);
      threeMove(X1,X2,NextBoard, Ret);
      twoMove(X1,X2,NextBoard,Ret);
@@ -61,14 +62,8 @@ drawMove(X1,X2,NextBoard,[X2,draw,NextBoard]):-
 %    move_aux(X1,7,Board, NextBoard).
 
  %True if NextBoard is Board whith an empty case replaced by Player mark.
-move_aux(P,1,L,LRet):-
- placeAtBottom(P,1,L,LRet),!.
-
 move_aux(P,Pos,L,LRet):-
- Pos>1,
- placeAtBottom(P,Pos,L,LRet);
- Pos1 is Pos -1,
- move_aux(P,Pos1,L,LRet).
+ placeAtBottom(P,Pos,L,LRet).
 
 placeAtBottom(P,Pos, L, LRet):-
    (Pos1 is Pos +35,
