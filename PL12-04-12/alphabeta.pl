@@ -5,7 +5,7 @@ alphabeta([X,play,Pos], Alpha, Beta, GoodPos, Val, Depth) :-
   Depth1 is Depth-1,
   moves([X,play,Pos], PosList),!,
   PosList \=[],
-  boundedbest(PosList, Alpha, Beta, GoodPos, Val, Depth1).
+  boundedbest(PosList, Alpha, Beta, GoodPos, Val, Depth1),!.
 
 alphabeta(Pos,_,_,_,Val,0):-
    utility(Pos, Val).
